@@ -48,7 +48,10 @@ void DBDetector::LoadModel(const std::string &model_dir) {
   config.SwitchIrOptim(true);//默认为true，若设置为false则关闭所有优化
 
   config.EnableMemoryOptim();//开启内存、显存复用
-  config.DisableGlogInfo();//关闭全部日志
+  //config.DisableGlogInfo();//关闭全部日志
+
+  config.EnableProfile();//打开 Profile，运行结束后会打印所有 OP 的耗时占比。
+
 
   this->predictor_ = CreatePredictor(config);
 }
@@ -75,7 +78,8 @@ cv::Mat DBDetector::Run(cv::Mat &img,
   auto input_t = this->predictor_->GetInputHandle(input_names[0]);
   input_t->Reshape({1, 3, resize_img.rows, resize_img.cols});
   input_t->CopyFromCpu(input.data());
-  this->predictor_->Run();
+
+  this->predictor_->Run();//内存占用高！
 
   std::vector<float> out_data;
   auto output_names = this->predictor_->GetOutputNames();
@@ -119,6 +123,7 @@ cv::Mat DBDetector::Run(cv::Mat &img,
   if (this->visualize_) {
     return Utility::VisualizeBboxes(srcimg, boxes);
   }
+
   return cv::Mat();
 }
 

@@ -24,7 +24,7 @@ std::vector<std::string> CRNNRecognizer::Run(std::vector<std::vector<std::vector
   cv::Mat resize_img;
 
   std::vector<std::string> result;
-  std::cout << "The predicted text is :" << std::endl;
+  //std::cout << "The predicted text is :" << std::endl;
   int index = 0;
   for (int i = boxes.size() - 1; i >= 0; i--) {
     crop_img = GetRotateCropImage(srcimg, boxes[i]);
@@ -87,11 +87,11 @@ std::vector<std::string> CRNNRecognizer::Run(std::vector<std::vector<std::vector
     score /= count;
     std::string tmp;
     for (int i = 0; i < str_res.size(); i++) {
-      std::cout << str_res[i];
+      //std::cout << str_res[i];
       tmp.append(str_res[i]);
     }
     result.push_back(tmp);
-    std::cout << "\tscore: " << score << std::endl;
+    //std::cout << "\tscore: " << score << std::endl;
   }
   return result;
 }

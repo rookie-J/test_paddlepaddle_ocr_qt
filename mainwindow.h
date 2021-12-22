@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QLabel>
 #include <QString>
-
+#include <QTime>
 #include "paddle/config.h"
 #include "paddle/ocr_det.h"
 #include "paddle/ocr_rec.h"
@@ -30,7 +30,6 @@ private:
     QLabel* m_label;
     PaddleOCR::DBDetector* m_det;
     PaddleOCR::CRNNRecognizer* m_rec;
-
 };
 
 #endif // MAINWINDOW_H

@@ -20,11 +20,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->splitter->widget(0)->resize(512,512);
     m_label=new QLabel(ui->widget);
-    //PaddleOCR::OCRConfig config("E:/qtproject/paddleOCRDemo/config.txt");
+
     PaddleOCR::OCRConfig config("./config.txt");
-
-    //cv::Mat srcimg = cv::imread("E:/github/paddle/PaddleOCR/doc/imgs/11.jpg", cv::IMREAD_COLOR);
-
+    qDebug() << "GPU :" << config.use_gpu;
     m_det=new PaddleOCR::DBDetector(config.det_model_dir, config.use_gpu, config.gpu_id,
                      config.gpu_mem, config.cpu_math_library_num_threads,
                      config.use_mkldnn, config.max_side_len, config.det_db_thresh,
@@ -41,13 +39,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->checkBox_imgvis,&QCheckBox::stateChanged,[this](){
         m_det->SetVisualize(ui->checkBox_imgvis->isChecked());
     });
-    //std::vector<std::vector<std::vector<int>>> boxes;
-    //m_det->Run(srcimg, boxes);
-    //std::vector<std::string> res=m_rec->Run(boxes, srcimg, nullptr);
-    //for(auto s:res)
-    //{
-    //    ui->textBrowser->append(s.data());
-    //}
 }
 
 MainWindow::~MainWindow()
@@ -60,16 +51,20 @@ MainWindow::~MainWindow()
 void MainWindow::SetImage()
 {
     ui->textBrowser->clear();
-    m_imgPath=QFileDialog::getOpenFileName(this,"Choose Image","","Image File(*.png *.jpg *.bmp)");
+    m_imgPath=QFileDialog::getOpenFileName(this,"Choose Image","","Image File(*.png *.jpg *.bmp *.jpeg)");
     if(m_imgPath.size()==0)
     {
         return;
     }
-
+    QTime qtime;
+    qtime.start();
     Mat srcimg = imread(m_imgPath.toLocal8Bit().constData(), IMREAD_COLOR);
+    qDebug() << "time: " << qtime.elapsed() << "ms\n";
     std::vector<std::vector<std::vector<int>>> boxes;
     cv::Mat img_vis=m_det->Run(srcimg, boxes);
+    qDebug() << "time: " << qtime.elapsed() << "ms\n";
     std::vector<std::string> res=m_rec->Run(boxes, srcimg, nullptr);
+    qDebug() << "time: " << qtime.elapsed() << "ms\n";
     m_label->resize(ui->widget->size());
     if(ui->checkBox_imgvis->isChecked())
     {
